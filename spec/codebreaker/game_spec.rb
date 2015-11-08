@@ -19,7 +19,7 @@ module Codebreaker
       end
  
       it "saves secret code with numbers from 1 to 6" do
-        expect(game.secret_code.join).not_to match(/[07-9]+/)
+        expect(game.secret_code.join).not_to match(/[07-9]/)
       end
     end
   end
