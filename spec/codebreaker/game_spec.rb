@@ -17,10 +17,6 @@ module Codebreaker
         expect(game.instance_variable_get(:@secret_code).count).to eq(CODE_SIZE)
       end
 
-      it "saves 4 numbers with Fixnum class" do
-        expect(game.instance_variable_get(:@secret_code).each(&:class)).to contain_exactly(([Fixnum] * CODE_SIZE).flatten)
-      end
-
       it "saves secret code with numbers from 1 to 6" do
         expect(game.instance_variable_get(:@secret_code).join).not_to match(/[^1-6]+/)
       end
