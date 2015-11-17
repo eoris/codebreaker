@@ -18,7 +18,7 @@ module Codebreaker
       end
 
       it "saves 4 numbers with Fixnum class" do
-        expect(game.instance_variable_get(:@secret_code).each(&:class)).to contain_exactly(Fixnum, Fixnum, Fixnum, Fixnum)
+        expect(game.instance_variable_get(:@secret_code).each(&:class)).to contain_exactly(([Fixnum] * CODE_SIZE).flatten)
       end
 
       it "saves secret code with numbers from 1 to 6" do
@@ -98,6 +98,19 @@ module Codebreaker
         it "raises ArgumentError \"Code length must be #{CODE_SIZE}\"" do
           expect {game.guess(123456)}.to raise_error(ArgumentError, "Code length must be #{CODE_SIZE}")
         end
+
+        it "change attempts count by -1" do
+          expect{game.guess(1234)}.to change{game.attempts}.by(-1)
+        end
+
+        it "change score by -10" do
+          expect{game.guess(1234)}.to change{game.score}.by(-10)
+        end
+
+        it "raises AttemptsError, \"0 from #{ATTEMPTS} attempts left\"" do
+          game.instance_variable_set(:@attempts, 0)
+          expect {game.guess(1234)}.to raise_error(AttemptsError, "0 from #{ATTEMPTS} attempts left")
+        end
       end
 
       context "#hint" do
@@ -114,6 +127,11 @@ module Codebreaker
 
         it "change hint count by -1" do
           expect{game.hint}.to change{game.hint_count}.by(-1)
+        end
+
+        it "raise HintCountError, \"Hint may be used only #{HINT_COUNT} times\"" do
+          game.instance_variable_set(:@hint_count, 0)
+          expect {game.hint}.to raise_error(HintCountError, "Hint may be used only #{HINT_COUNT} times")
         end
       end
   end
