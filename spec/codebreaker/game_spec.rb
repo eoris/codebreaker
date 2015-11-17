@@ -62,9 +62,9 @@ module Codebreaker
           expect(game.guess(1234)).to eq(['+', '+', '+', '+'])
         end
 
-        it "returns '+++-'" do
+        it "returns '+++'" do
           game.instance_variable_set(:@secret_code, [2, 2, 3, 4])
-          expect(game.guess(1234)).to eq(['+', '+', '+', '-'])
+          expect(game.guess(1234)).to eq(['+', '+', '+'])
         end
 
         it "returns '+-'" do
@@ -72,9 +72,9 @@ module Codebreaker
           expect(game.guess(1256)).to eq(['+', '-'])
         end
 
-        it "returns '++-'" do
+        it "returns '++'" do
           game.instance_variable_set(:@secret_code, [4, 3, 2, 3])
-          expect(game.guess(5523)).to eq(['+', '+', '-'])
+          expect(game.guess(5523)).to eq(['+', '+'])
         end
 
         it "returns '----'" do
@@ -82,21 +82,21 @@ module Codebreaker
           expect(game.guess(4321)).to eq(['-', '-', '-', '-'])
         end
 
-        it "returns '+---'" do
+        it "returns '+'" do
           game.instance_variable_set(:@secret_code, [2, 2, 2 ,2])
-          expect(game.guess(1234)).to eq(['+', '-', '-', '-'])
+          expect(game.guess(1234)).to eq(['+'])
         end
 
-        it "raises UserCodeError 'It must be a numeric code, or be 1..6'" do
-          expect {game.guess(7890)}.to raise_error(UserCodeError, "It must be a numeric code, or be 1..6")
+        it "raises ArgumentError 'It must be a numeric code, or be 1..6'" do
+          expect {game.guess(7890)}.to raise_error(ArgumentError, "It must be a numeric code, or be 1..6")
         end
 
-        it "raises UserCodeError 'It must be a numeric code, or be 1..6'" do
-          expect {game.guess('abcd')}.to raise_error(UserCodeError, "It must be a numeric code, or be 1..6")
+        it "raises ArgumentError 'It must be a numeric code, or be 1..6'" do
+          expect {game.guess('abcd')}.to raise_error(ArgumentError, "It must be a numeric code, or be 1..6")
         end
 
-        it "raises UserCodeError \"Code length must be #{CODE_SIZE}\"" do
-          expect {game.guess(123456)}.to raise_error(UserCodeError, "Code length must be #{CODE_SIZE}")
+        it "raises ArgumentError \"Code length must be #{CODE_SIZE}\"" do
+          expect {game.guess(123456)}.to raise_error(ArgumentError, "Code length must be #{CODE_SIZE}")
         end
       end
 
@@ -110,6 +110,10 @@ module Codebreaker
         it "returns hint" do
           game.instance_variable_set(:@secret_code, [1, 2, 3 ,4])
           expect(game.hint).to include(1).or include(2).or include(3).or include(4)
+        end
+
+        it "change hint count by -1" do
+          expect{game.hint}.to change{game.hint_count}.by(-1)
         end
       end
   end

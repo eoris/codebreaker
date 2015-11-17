@@ -30,7 +30,7 @@ module Codebreaker
     alias_method :restart, :start
 
     def win?
-      match == '+' * CODE_SIZE
+      match == ['+'] * CODE_SIZE
     end
 
     def lose?
@@ -66,16 +66,16 @@ module Codebreaker
 
     def check_user_code
       if @user_code.join.match(/[^1-6]+/)
-        raise UserCodeError, 'It must be a numeric code, or be 1..6'
+        raise ArgumentError, 'It must be a numeric code, or be 1..6'
       elsif @user_code.count != CODE_SIZE
-        raise UserCodeError, "Code length must be #{CODE_SIZE}"
+        raise ArgumentError, "Code length must be #{CODE_SIZE}"
       else
         @user_code
       end
     end
 
     def matching_numbers
-      @secret_code.join.scan(/["#{@user_code.join}"]/).map(&:to_i)
+      @user_code.select { |i| @secret_code.include?(i) }
     end
 
     def exact_matching_numbers

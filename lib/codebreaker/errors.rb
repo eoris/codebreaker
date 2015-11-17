@@ -5,9 +5,6 @@ module Codebreaker
   class AttemptsError < Warning
   end
 
-  class UserCodeError < Warning
-  end
-
   class SecretCodeError < Warning
   end
 
