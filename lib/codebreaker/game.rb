@@ -1,13 +1,14 @@
-module Codebreaker
+require_relative 'errors'
 
-    ATTEMPTS   = 10
-    CODE_SIZE  = 4
-    HINT_COUNT = 1
-    SCORE      = 100
-    
+module Codebreaker
+  ATTEMPTS   = 10
+  CODE_SIZE  = 4
+  HINT_COUNT = 1
+  SCORE      = 100
+
   class Game
+    attr_reader :score, :attempts, :hint_number, :hint_count, :user_code
     attr_accessor :user_name
-    attr_reader   :score, :attempts, :hint_number, :hint_count, :user_code
 
     def initialize(user_name = 'Player1')
       @secret_code = ''
@@ -49,10 +50,10 @@ module Codebreaker
     def guess(code)
       if attempts_left?
         @attempts -= 1
-        @score    -= 10
+        @score -= 10
         @user_code = code.to_s.chars.map(&:to_i)
-        self.check_secret_code
-        self.check_user_code
+        check_secret_code
+        check_user_code
         match
       else
         raise AttemptsError, "0 from #{ATTEMPTS} attempts left"
@@ -60,12 +61,12 @@ module Codebreaker
     end
 
     def check_secret_code
-      raise SecretCodeError, "Secret code is empty" if @secret_code.empty?
+      raise SecretCodeError, 'Secret code is empty' if @secret_code.empty?
     end
 
     def check_user_code
       if @user_code.join.match(/[^1-6]+/)
-        raise UserCodeError, "It must be a numeric code, or be 1..6"
+        raise UserCodeError, 'It must be a numeric code, or be 1..6'
       elsif @user_code.count != CODE_SIZE
         raise UserCodeError, "Code length must be #{CODE_SIZE}"
       else
@@ -87,17 +88,12 @@ module Codebreaker
         matched
       else
         delete_list = exact_matching_numbers
-        delete_list.each do |del|
-          matched.delete_at(matched.index(del))
-          matched
-        end
+        delete_list.each { |del| matched.delete_at(matched.index(del)) }
       end
       matched
     end
 
     def match
-      self.exact_matching_numbers
-      self.not_exact_matching_numbers
       result = []
       result << exact_matching_numbers.fill('+')
       result << not_exact_matching_numbers.fill('-')
@@ -107,7 +103,7 @@ module Codebreaker
     def hint
       if have_hint?
         @hint_count -= 1
-        random_index = rand(0..CODE_SIZE-1)
+        random_index = rand(0..CODE_SIZE - 1)
         @hint_number = @secret_code[random_index]
         hint_arr = Array.new(CODE_SIZE, '*')
         hint_arr[random_index] = @hint_number
