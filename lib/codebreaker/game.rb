@@ -11,7 +11,7 @@ module Codebreaker
     attr_accessor :user_name
 
     def initialize(user_name = 'Player1')
-      @secret_code = ''
+      @secret_code = []
       @user_name   = user_name
       @hint_count  = HINT_COUNT
       @attempts    = ATTEMPTS
@@ -20,8 +20,8 @@ module Codebreaker
 
     def start
       @secret_code = secret_code
-      @user_code   = ''
-      @hint_number = ''
+      @user_code   = []
+      @hint_number = []
       @hint_count  = HINT_COUNT
       @attempts    = ATTEMPTS
       @score       = SCORE
