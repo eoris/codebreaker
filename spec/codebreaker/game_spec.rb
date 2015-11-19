@@ -62,6 +62,11 @@ module Codebreaker
           expect(game.guess(1234)).to eq(['+', '+', '+', '+'])
         end
 
+        it "returns '++++' if guess the secret code" do
+          game.instance_variable_set(:@secret_code, [2, 2, 3, 2])
+          expect(game.guess(2222)).to eq(['+', '+', '+'])
+        end
+
         it "returns '+++'" do
           game.instance_variable_set(:@secret_code, [2, 2, 3, 4])
           expect(game.guess(1234)).to eq(['+', '+', '+'])

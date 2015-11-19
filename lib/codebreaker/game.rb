@@ -75,7 +75,8 @@ module Codebreaker
     end
 
     def matching_numbers
-      @user_code.select { |i| @secret_code.include?(i) }
+      s = @secret_code.dup
+      @user_code.select { |i| s.delete_at(s.index(i)) if s.include?(i) }
     end
 
     def exact_matching_numbers
