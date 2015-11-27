@@ -118,25 +118,21 @@ module Codebreaker
         end
       end
 
-    context "#hint" do
+    context "#attempts_left?" do
       let(:game) { Game.new }
 
       before do
         game.start
       end
 
-      it "returns hint" do
-        game.instance_variable_set(:@secret_code, [1, 2, 3 ,4])
-        expect(game.hint).to include(1).or include(2).or include(3).or include(4)
+      it "returns true if the user has attempts" do
+        game.instance_variable_set(:@attempts, 1)
+        expect(game.attempts_left?).to be true
       end
 
-      it "change hint count by -1" do
-        expect{game.hint}.to change{game.hint_count}.by(-1)
-      end
-
-      it "raise RuntimeError, \"Hint may be used only #{HINT_COUNT} times\"" do
-        game.instance_variable_set(:@hint_count, 0)
-        expect {game.hint}.to raise_error(RuntimeError, "Hint may be used only #{HINT_COUNT} times")
+      it "returns false if the user has no attempts" do
+        game.instance_variable_set(:@attempts, 0)
+        expect(game.attempts_left?).to be false
       end
     end
 
@@ -177,24 +173,6 @@ module Codebreaker
       end
     end
 
-    context "#attempts_left?" do
-      let(:game) { Game.new }
-
-      before do
-        game.start
-      end
-
-      it "returns true if the user has attempts" do
-        game.instance_variable_set(:@attempts, 1)
-        expect(game.attempts_left?).to be true
-      end
-
-      it "returns false if the user has no attempts" do
-        game.instance_variable_set(:@attempts, 0)
-        expect(game.attempts_left?).to be false
-      end
-    end
-
     context "#have_hint?" do
       let(:game) { Game.new }
 
@@ -210,6 +188,46 @@ module Codebreaker
       it "returns false if the user has no hint" do
         game.instance_variable_set(:@hint_count, 0)
         expect(game.have_hint?).to be false
+      end
+    end
+
+    context "#match" do
+      let(:game) { Game.new }
+
+      before do
+        game.start
+        game.instance_variable_set(:@secret_code, [1, 2, 3, 3])
+        game.instance_variable_set(:@user_code, [4, 3, 2, 1])
+      end
+
+      it "returns ['-', '-', '-']" do
+        expect(game.match).to eq(['-', '-', '-'])
+      end
+
+      it "returns Array" do
+        expect(game.match).to be_a(Array)
+      end
+    end
+
+    context "#hint" do
+      let(:game) { Game.new }
+
+      before do
+        game.start
+      end
+
+      it "returns hint" do
+        game.instance_variable_set(:@secret_code, [1, 2, 3 ,4])
+        expect(game.hint).to include(1).or include(2).or include(3).or include(4)
+      end
+
+      it "change hint count by -1" do
+        expect{game.hint}.to change{game.hint_count}.by(-1)
+      end
+
+      it "raise RuntimeError, \"Hint may be used only #{HINT_COUNT} times\"" do
+        game.instance_variable_set(:@hint_count, 0)
+        expect {game.hint}.to raise_error(RuntimeError, "Hint may be used only #{HINT_COUNT} times")
       end
     end
 
@@ -264,24 +282,6 @@ module Codebreaker
 
       it "returns Array of exact matching numbers" do
         expect(game.send(:not_exact_matching_numbers)).to be_a(Array)
-      end
-    end
-
-    context "#match" do
-      let(:game) { Game.new }
-
-      before do
-        game.start
-        game.instance_variable_set(:@secret_code, [1, 2, 3, 3])
-        game.instance_variable_set(:@user_code, [4, 3, 2, 1])
-      end
-
-      it "returns ['-', '-', '-']" do
-        expect(game.match).to eq(['-', '-', '-'])
-      end
-
-      it "returns Array" do
-        expect(game.match).to be_a(Array)
       end
     end
   end

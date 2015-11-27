@@ -1,7 +1,8 @@
 require_relative 'game'
-include Codebreaker
 
 class Interface
+  include Codebreaker
+  
   def exe
     loop do
       start_game

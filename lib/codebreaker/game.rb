@@ -27,24 +27,6 @@ module Codebreaker
     end
     alias_method :restart, :start
     
-    def win?
-      @secret_code == @user_code
-    end
-    
-    def lose?
-      @attempts == 0
-    end
-    
-    def attempts_left?
-      @attempts > 0
-    end
-    alias_method :attempts?, :attempts_left?
-    
-    def have_hint?
-      @hint_count > 0
-    end
-    alias_method :hint?, :have_hint?
-    
     def guess(code)
       if attempts_left?
         @user_code = code.to_s.chars.map(&:to_i)
@@ -56,6 +38,24 @@ module Codebreaker
         raise RuntimeError, "0 from #{ATTEMPTS} attempts left"
       end
     end
+    
+    def attempts_left?
+      @attempts > 0
+    end
+    alias_method :attempts?, :attempts_left?
+    
+    def win?
+      @secret_code == @user_code
+    end
+    
+    def lose?
+      @attempts == 0
+    end
+    
+    def have_hint?
+      @hint_count > 0
+    end
+    alias_method :hint?, :have_hint?
     
     def validation
       raise ArgumentError, 'User name is empty' if user_name.empty? 
