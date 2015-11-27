@@ -1,2 +1,0 @@
-require 'codebreaker'
-include Codebreaker

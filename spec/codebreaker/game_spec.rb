@@ -38,7 +38,7 @@ module Codebreaker
       end
 
       it "resets score" do
-        expect(game.instance_variable_get(:@score)).to eq(SCORE)
+        expect(game.instance_variable_get(:@score)).to eq(SCORE_MULTIPLIER * ATTEMPTS)
       end
 
       it "resets attempts" do
@@ -112,9 +112,9 @@ module Codebreaker
           expect{game.guess(1234)}.to change{game.score}.by(-10)
         end
 
-        it "raises AttemptsError, \"0 from #{ATTEMPTS} attempts left\"" do
+        it "raises RuntimeError, \"0 from #{ATTEMPTS} attempts left\"" do
           game.instance_variable_set(:@attempts, 0)
-          expect {game.guess(1234)}.to raise_error(AttemptsError, "0 from #{ATTEMPTS} attempts left")
+          expect {game.guess(1234)}.to raise_error(RuntimeError, "0 from #{ATTEMPTS} attempts left")
         end
       end
 
@@ -134,9 +134,9 @@ module Codebreaker
         expect{game.hint}.to change{game.hint_count}.by(-1)
       end
 
-      it "raise HintCountError, \"Hint may be used only #{HINT_COUNT} times\"" do
+      it "raise RuntimeError, \"Hint may be used only #{HINT_COUNT} times\"" do
         game.instance_variable_set(:@hint_count, 0)
-        expect {game.hint}.to raise_error(HintCountError, "Hint may be used only #{HINT_COUNT} times")
+        expect {game.hint}.to raise_error(RuntimeError, "Hint may be used only #{HINT_COUNT} times")
       end
     end
 
@@ -223,11 +223,11 @@ module Codebreaker
       end
 
       it "returns matching numbers" do
-        expect(game.matching_numbers).to include(2, 4)
+        expect(game.send(:matching_numbers)).to include(2, 4)
       end
 
       it "returns Array of matching numbers" do
-        expect(game.matching_numbers).to be_a(Array)
+        expect(game.send(:matching_numbers)).to be_a(Array)
       end
     end
 
@@ -241,11 +241,11 @@ module Codebreaker
       end
 
       it "returns exact matching numbers" do
-        expect(game.exact_matching_numbers).to include(3, 4)
+        expect(game.send(:exact_matching_numbers)).to include(3, 4)
       end
 
       it "returns Array of exact matching numbers" do
-        expect(game.exact_matching_numbers).to be_a(Array)
+        expect(game.send(:exact_matching_numbers)).to be_a(Array)
       end
     end
 
@@ -259,11 +259,11 @@ module Codebreaker
       end
 
       it "returns exact matching numbers" do
-        expect(game.not_exact_matching_numbers).to include(1, 2, 3, 4)
+        expect(game.send(:not_exact_matching_numbers)).to include(1, 2, 3, 4)
       end
 
       it "returns Array of exact matching numbers" do
-        expect(game.not_exact_matching_numbers).to be_a(Array)
+        expect(game.send(:not_exact_matching_numbers)).to be_a(Array)
       end
     end
 
