@@ -1,10 +1,13 @@
 module Codebreaker
+
   ATTEMPTS         = 10
   CODE_SIZE        = 4
   HINT_COUNT       = 1
   SCORE_MULTIPLIER = 10
-
+  
   class Game
+
+
     attr_reader :score, :attempts, :hint_number, :hint_count, :user_code
     attr_accessor :user_name
     
@@ -74,6 +77,8 @@ module Codebreaker
     def hint
       if have_hint?
         @hint_count -= 1
+        @attempts -= 1
+        @score -= SCORE_MULTIPLIER
         random_index = rand(CODE_SIZE)
         @hint_number = @secret_code[random_index]
         hint_arr = Array.new(CODE_SIZE, '*')

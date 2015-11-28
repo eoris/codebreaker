@@ -53,70 +53,70 @@ module Codebreaker
         game.start
       end
 
-        it "returns the Array" do
-          expect(game.guess(1234)).to be_a(Array)
-        end
-
-        it "returns '++++' if guess the secret code" do
-          game.instance_variable_set(:@secret_code, [1, 2, 3, 4])
-          expect(game.guess(1234)).to eq(['+', '+', '+', '+'])
-        end
-
-        it "returns '++++' if guess the secret code" do
-          game.instance_variable_set(:@secret_code, [2, 2, 3, 2])
-          expect(game.guess(2222)).to eq(['+', '+', '+'])
-        end
-
-        it "returns '+++'" do
-          game.instance_variable_set(:@secret_code, [2, 2, 3, 4])
-          expect(game.guess(1234)).to eq(['+', '+', '+'])
-        end
-
-        it "returns '+-'" do
-          game.instance_variable_set(:@secret_code, [1, 3, 2, 3])
-          expect(game.guess(1256)).to eq(['+', '-'])
-        end
-
-        it "returns '++'" do
-          game.instance_variable_set(:@secret_code, [4, 3, 2, 3])
-          expect(game.guess(5523)).to eq(['+', '+'])
-        end
-
-        it "returns '----'" do
-          game.instance_variable_set(:@secret_code, [1, 2, 3 ,4])
-          expect(game.guess(4321)).to eq(['-', '-', '-', '-'])
-        end
-
-        it "returns '+'" do
-          game.instance_variable_set(:@secret_code, [2, 2, 2 ,2])
-          expect(game.guess(1234)).to eq(['+'])
-        end
-
-        it "raises ArgumentError 'It must be a numeric code, or be 1..6'" do
-          expect {game.guess(7890)}.to raise_error(ArgumentError, "It must be a numeric code, or be 1..6")
-        end
-
-        it "raises ArgumentError 'It must be a numeric code, or be 1..6'" do
-          expect {game.guess('abcd')}.to raise_error(ArgumentError, "It must be a numeric code, or be 1..6")
-        end
-
-        it "raises ArgumentError \"Code length must be #{CODE_SIZE}\"" do
-          expect {game.guess(123456)}.to raise_error(ArgumentError, "Code length must be #{CODE_SIZE}")
-        end
-
-        it "change attempts count by -1" do
-          expect{game.guess(1234)}.to change{game.attempts}.by(-1)
-        end
-
-        it "change score by -10" do
-          expect{game.guess(1234)}.to change{game.score}.by(-10)
-        end
-
-        it "raises RuntimeError, \"0 from #{ATTEMPTS} attempts left\"" do
-          game.instance_variable_set(:@attempts, 0)
-          expect {game.guess(1234)}.to raise_error(RuntimeError, "0 from #{ATTEMPTS} attempts left")
-        end
+      it "returns the Array" do
+        expect(game.guess(1234)).to be_a(Array)
       end
+
+      it "returns '++++' if guess the secret code" do
+        game.instance_variable_set(:@secret_code, [1, 2, 3, 4])
+        expect(game.guess(1234)).to eq(['+', '+', '+', '+'])
+      end
+
+      it "returns '++++' if guess the secret code" do
+        game.instance_variable_set(:@secret_code, [2, 2, 3, 2])
+        expect(game.guess(2222)).to eq(['+', '+', '+'])
+      end
+
+      it "returns '+++'" do
+        game.instance_variable_set(:@secret_code, [2, 2, 3, 4])
+        expect(game.guess(1234)).to eq(['+', '+', '+'])
+      end
+
+      it "returns '+-'" do
+        game.instance_variable_set(:@secret_code, [1, 3, 2, 3])
+        expect(game.guess(1256)).to eq(['+', '-'])
+      end
+
+      it "returns '++'" do
+        game.instance_variable_set(:@secret_code, [4, 3, 2, 3])
+        expect(game.guess(5523)).to eq(['+', '+'])
+      end
+
+      it "returns '----'" do
+        game.instance_variable_set(:@secret_code, [1, 2, 3 ,4])
+        expect(game.guess(4321)).to eq(['-', '-', '-', '-'])
+      end
+
+      it "returns '+'" do
+        game.instance_variable_set(:@secret_code, [2, 2, 2 ,2])
+        expect(game.guess(1234)).to eq(['+'])
+      end
+
+      it "raises ArgumentError 'It must be a numeric code, or be 1..6'" do
+        expect {game.guess(7890)}.to raise_error(ArgumentError, "It must be a numeric code, or be 1..6")
+      end
+
+      it "raises ArgumentError 'It must be a numeric code, or be 1..6'" do
+        expect {game.guess('abcd')}.to raise_error(ArgumentError, "It must be a numeric code, or be 1..6")
+      end
+
+      it "raises ArgumentError \"Code length must be #{CODE_SIZE}\"" do
+        expect {game.guess(123456)}.to raise_error(ArgumentError, "Code length must be #{CODE_SIZE}")
+      end
+
+      it "change attempts count by -1" do
+        expect{game.guess(1234)}.to change{game.attempts}.by(-1)
+      end
+
+      it "change score by -10" do
+        expect{game.guess(1234)}.to change{game.score}.by(-10)
+      end
+
+      it "raises RuntimeError, \"0 from #{ATTEMPTS} attempts left\"" do
+        game.instance_variable_set(:@attempts, 0)
+        expect {game.guess(1234)}.to raise_error(RuntimeError, "0 from #{ATTEMPTS} attempts left")
+      end
+    end
 
     context "#attempts_left?" do
       let(:game) { Game.new }
