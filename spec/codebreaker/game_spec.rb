@@ -2,12 +2,11 @@ require 'spec_helper'
 
 module Codebreaker
   describe Game do
-    context "#start" do
-      let(:game) { Game.new }
+    let(:game) { Game.new }
 
-      before do
-        game.start
-      end
+    context "#start" do
+
+      before { game.start }
 
       it "saves secret code" do
         expect(game.instance_variable_get(:@secret_code)).not_to be_empty
@@ -47,11 +46,8 @@ module Codebreaker
     end
 
     context "#guess" do
-      let(:game) { Game.new }
 
-      before do
-        game.start
-      end
+      before { game.start }
 
       it "returns the Array" do
         expect(game.guess(1234)).to be_a(Array)
@@ -62,7 +58,7 @@ module Codebreaker
         expect(game.guess(1234)).to eq(['+', '+', '+', '+'])
       end
 
-      it "returns '++++' if guess the secret code" do
+      it "returns '+++' if guess the secret code" do
         game.instance_variable_set(:@secret_code, [2, 2, 3, 2])
         expect(game.guess(2222)).to eq(['+', '+', '+'])
       end
@@ -119,11 +115,8 @@ module Codebreaker
     end
 
     context "#attempts_left?" do
-      let(:game) { Game.new }
 
-      before do
-        game.start
-      end
+      before { game.start }
 
       it "returns true if the user has attempts" do
         game.instance_variable_set(:@attempts, 1)
@@ -137,7 +130,6 @@ module Codebreaker
     end
 
     context "#win?" do
-      let(:game) { Game.new }
 
       before do
         game.start
@@ -156,11 +148,8 @@ module Codebreaker
     end
 
     context "#lose?" do
-      let(:game) { Game.new }
 
-      before do
-        game.start
-      end
+      before { game.start }
 
       it "returns true if user loses game" do
         game.instance_variable_set(:@attempts, 0)
@@ -174,11 +163,8 @@ module Codebreaker
     end
 
     context "#have_hint?" do
-      let(:game) { Game.new }
 
-      before do
-        game.start
-      end
+      before { game.start }
 
       it "returns true if the user has hint" do
         game.instance_variable_set(:@hint_count, 1)
@@ -192,7 +178,6 @@ module Codebreaker
     end
 
     context "#match" do
-      let(:game) { Game.new }
 
       before do
         game.start
@@ -210,11 +195,8 @@ module Codebreaker
     end
 
     context "#hint" do
-      let(:game) { Game.new }
 
-      before do
-        game.start
-      end
+      before { game.start }
 
       it "returns hint" do
         game.instance_variable_set(:@secret_code, [1, 2, 3 ,4])
@@ -231,57 +213,56 @@ module Codebreaker
       end
     end
 
-    context "#matching_numbers" do
-      let(:game) { Game.new }
+    describe 'private' do
+      context "#matching_numbers" do
 
-      before do
-        game.start
-        game.instance_variable_set(:@secret_code, [1, 3, 2, 4])
-        game.instance_variable_set(:@user_code, [6, 2, 6, 4])
+        before do
+          game.start
+          game.instance_variable_set(:@secret_code, [1, 3, 2, 4])
+          game.instance_variable_set(:@user_code, [6, 2, 6, 4])
+        end
+
+        it "returns matching numbers" do
+          expect(game.send(:matching_numbers)).to include(2, 4)
+        end
+
+        it "returns Array of matching numbers" do
+          expect(game.send(:matching_numbers)).to be_a(Array)
+        end
       end
 
-      it "returns matching numbers" do
-        expect(game.send(:matching_numbers)).to include(2, 4)
+      context "#exact_matching_numbers" do
+
+        before do
+          game.start
+          game.instance_variable_set(:@secret_code, [1, 3, 2, 4])
+          game.instance_variable_set(:@user_code, [3, 3, 3, 4])
+        end
+
+        it "returns exact matching numbers" do
+          expect(game.send(:exact_matching_numbers)).to include(3, 4)
+        end
+
+        it "returns Array of exact matching numbers" do
+          expect(game.send(:exact_matching_numbers)).to be_a(Array)
+        end
       end
 
-      it "returns Array of matching numbers" do
-        expect(game.send(:matching_numbers)).to be_a(Array)
-      end
-    end
+      context "#not_exact_matching_numbers" do
 
-    context "#exact_matching_numbers" do
-      let(:game) { Game.new }
+        before do
+          game.start
+          game.instance_variable_set(:@secret_code, [1, 2, 3, 4])
+          game.instance_variable_set(:@user_code, [4, 3, 2, 1])
+        end
 
-      before do
-        game.start
-        game.instance_variable_set(:@secret_code, [1, 3, 2, 4])
-        game.instance_variable_set(:@user_code, [3, 3, 3, 4])
-      end
+        it "returns exact matching numbers" do
+          expect(game.send(:not_exact_matching_numbers)).to include(1, 2, 3, 4)
+        end
 
-      it "returns exact matching numbers" do
-        expect(game.send(:exact_matching_numbers)).to include(3, 4)
-      end
-
-      it "returns Array of exact matching numbers" do
-        expect(game.send(:exact_matching_numbers)).to be_a(Array)
-      end
-    end
-
-    context "#not_exact_matching_numbers" do
-      let(:game) { Game.new }
-
-      before do
-        game.start
-        game.instance_variable_set(:@secret_code, [1, 2, 3, 4])
-        game.instance_variable_set(:@user_code, [4, 3, 2, 1])
-      end
-
-      it "returns exact matching numbers" do
-        expect(game.send(:not_exact_matching_numbers)).to include(1, 2, 3, 4)
-      end
-
-      it "returns Array of exact matching numbers" do
-        expect(game.send(:not_exact_matching_numbers)).to be_a(Array)
+        it "returns Array of exact matching numbers" do
+          expect(game.send(:not_exact_matching_numbers)).to be_a(Array)
+        end
       end
     end
   end

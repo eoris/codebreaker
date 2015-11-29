@@ -5,16 +5,35 @@ module Codebreaker
     def exe
       loop do
         start_game
-        game_flow
+        guessing
         restart_game == 'y' ? next : break
       end
-      # answer_if_lose
       user_name_input
     end
 
     def start_game
       @game = Game.new
       @game.start
+    end
+
+    def guessing
+      loop do
+        if @game.win?
+          p 'You win!'
+          break
+        elsif @game.lose?
+          p 'You lose!'
+          answer_if_lose
+          break
+        else
+          guess_input
+        end
+      end
+    end
+
+    def restart_game
+      p 'Do you want to try again? y/n'
+      input = gets.chomp
     end
 
     def user_name_input
@@ -31,14 +50,15 @@ module Codebreaker
       end
     end
 
+    private
+
     def game_info
-        p "attempts left: #{@game.attempts}"
-        p "score: #{@game.score}"
-        p "hint count: #{@game.hint_count}"
+      p "attempts left: #{@game.attempts}"
+      p "score: #{@game.score}"
+      p "hint count: #{@game.hint_count}"
     end
 
     def guess_input
-      #   p @game.instance_variable_get(:@secret_code)
       p "Enter four numbers from 1 to 6, or a 'hint' to help:"
       code = gets.chomp
       if code == 'hint'
@@ -56,26 +76,6 @@ module Codebreaker
         p 'Wrong input'
         end
       end
-    end
-
-    def game_flow
-      loop do
-        if @game.win?
-          p 'You win!'
-          break
-        elsif @game.lose?
-          p 'You lose!'
-          answer_if_lose
-          break
-        else
-          guess_input
-        end
-      end
-    end
-    
-    def restart_game
-      p 'Do you want to try again? y/n'
-      input = gets.chomp
     end
     
     def answer_if_lose

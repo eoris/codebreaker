@@ -1,13 +1,12 @@
+require 'yaml'
 module Codebreaker
 
   ATTEMPTS         = 10
   CODE_SIZE        = 4
   HINT_COUNT       = 1
   SCORE_MULTIPLIER = 10
-  
+
   class Game
-
-
     attr_reader :score, :attempts, :hint_number, :hint_count, :user_code
     attr_accessor :user_name
     
@@ -61,7 +60,7 @@ module Codebreaker
     alias_method :hint?, :have_hint?
     
     def validation
-      raise ArgumentError, 'User name is empty' if user_name.empty? 
+      raise ArgumentError, 'User name is empty' if user_name.empty?
       raise ArgumentError, 'Secret code is empty' if @secret_code.empty?
       raise ArgumentError, 'It must be a numeric code, or be 1..6' if @user_code.join.match(/[^1-6]+/)
       raise ArgumentError, "Code length must be #{CODE_SIZE}" if @user_code.count != CODE_SIZE
@@ -87,6 +86,21 @@ module Codebreaker
       else
         raise RuntimeError, "Hint may be used only #{HINT_COUNT} times"
       end
+    end
+
+    def save_game(file)
+      File.open(file, 'w') { |f| f.write self.to_yaml }
+    end
+
+    def load_game(file)
+      load = YAML.load_file(file)
+      @user_name   = load.user_name
+      @secret_code = load.instance_variable_get(:@secret_code)
+      @user_code   = load.user_code
+      @hint_number = load.hint_number
+      @hint_count  = load.hint_count
+      @attempts    = load.attempts
+      @score       = load.score
     end
     
     private
