@@ -1,4 +1,3 @@
-require 'yaml'
 module Codebreaker
 
   ATTEMPTS         = 10
@@ -11,11 +10,7 @@ module Codebreaker
     attr_accessor :user_name
     
     def initialize(user_name = 'Player1')
-      @secret_code = []
       @user_name   = user_name
-      @hint_count  = HINT_COUNT
-      @attempts    = ATTEMPTS
-      @score       = SCORE_MULTIPLIER * ATTEMPTS
     end
     
     def start
@@ -89,7 +84,11 @@ module Codebreaker
     end
 
     def save_game(file)
-      File.open(file, 'w') { |f| f.write self.to_yaml }
+      if File.exist?(file)
+        raise IOError, 'Such file already exist'
+      else
+        File.open(file, 'w') { |f| f.write self.to_yaml }
+      end
     end
 
     def load_game(file)

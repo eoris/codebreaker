@@ -3,10 +3,16 @@ require 'spec_helper'
 module Codebreaker
   describe Game do
     let(:game) { Game.new }
+    before(:each) { game.start }
 
-    context "#start" do
+    describe "#initialize" do
 
-      before { game.start }
+      it "initialize default user name" do
+        expect(game.user_name).to eq('Player1')
+      end
+    end
+
+    describe "#start" do
 
       it "saves secret code" do
         expect(game.instance_variable_get(:@secret_code)).not_to be_empty
@@ -36,18 +42,34 @@ module Codebreaker
         expect(game.instance_variable_get(:@hint_count)).to eq(HINT_COUNT)
       end
 
-      it "resets score" do
+      it 'resets attempts' do
+        expect(game.instance_variable_get(:@attempts)).to eq(ATTEMPTS)
+      end
+
+      it 'resets score' do
         expect(game.instance_variable_get(:@score)).to eq(SCORE_MULTIPLIER * ATTEMPTS)
       end
 
-      it "resets attempts" do
-        expect(game.instance_variable_get(:@attempts)).to eq(ATTEMPTS)
+      it 'returns Game object' do
+        expect(game.start).to equal(game)
       end
     end
 
-    context "#guess" do
+    describe "#guess" do
 
-      before { game.start }
+      it "calls #attempts_left?" do
+        expect(game).to receive(:attempts_left?).and_return(true)
+        game.guess(1234)
+      end
+
+      it "sets value to @user_code" do
+        expect{game.guess(3333)}.to change{game.user_code}.to([3, 3, 3, 3])
+      end
+
+      it "calls #validation" do
+        expect(game).to receive(:validation)
+        game.guess(1111)
+      end
 
       it "returns the Array" do
         expect(game.guess(1234)).to be_a(Array)
@@ -104,8 +126,18 @@ module Codebreaker
         expect{game.guess(1234)}.to change{game.attempts}.by(-1)
       end
 
-      it "change score by -10" do
-        expect{game.guess(1234)}.to change{game.score}.by(-10)
+      it "change score by -#{SCORE_MULTIPLIER}" do
+        expect{game.guess(1234)}.to change{game.score}.by(-SCORE_MULTIPLIER)
+      end
+
+      it "did not change score by -#{SCORE_MULTIPLIER} if game.win?" do
+        game.instance_variable_set(:@secret_code, [1, 1, 1, 1])
+        expect{game.guess(1111)}.to_not change{game.score}
+      end
+
+      it "receives match method" do
+        expect(game).to receive(:match)
+        game.guess(4444)
       end
 
       it "raises RuntimeError, \"0 from #{ATTEMPTS} attempts left\"" do
@@ -114,9 +146,7 @@ module Codebreaker
       end
     end
 
-    context "#attempts_left?" do
-
-      before { game.start }
+    describe "#attempts_left?" do
 
       it "returns true if the user has attempts" do
         game.instance_variable_set(:@attempts, 1)
@@ -129,10 +159,9 @@ module Codebreaker
       end
     end
 
-    context "#win?" do
+    describe "#win?" do
 
       before do
-        game.start
         game.instance_variable_set(:@secret_code, [1, 2, 3, 4])
       end
 
@@ -147,9 +176,7 @@ module Codebreaker
       end
     end
 
-    context "#lose?" do
-
-      before { game.start }
+    describe "#lose?" do
 
       it "returns true if user loses game" do
         game.instance_variable_set(:@attempts, 0)
@@ -162,9 +189,7 @@ module Codebreaker
       end
     end
 
-    context "#have_hint?" do
-
-      before { game.start }
+    describe "#have_hint?" do
 
       it "returns true if the user has hint" do
         game.instance_variable_set(:@hint_count, 1)
@@ -177,10 +202,33 @@ module Codebreaker
       end
     end
 
-    context "#match" do
+    describe "#validation" do
+
+      it "raises ArgumentError, 'User name is empty'" do
+        game.instance_variable_set(:@user_name, '')
+        game.instance_variable_set(:@user_code, [1, 1, 1, 1])
+        expect { game.validation }.to raise_error(ArgumentError, 'User name is empty')
+      end
+
+      it "raises ArgumentError, 'Secret code is empty'" do
+        game.instance_variable_set(:@secret_code, [])
+        game.instance_variable_set(:@user_code, [1, 1, 1, 1])
+        expect { game.validation }.to raise_error(ArgumentError, 'Secret code is empty')
+      end
+
+      it "raises ArgumentError, 'It must be a numeric code, or be 1..6'" do
+        game.instance_variable_set(:@user_code, [7, 7, 7, 1])
+        expect { game.validation }.to raise_error(ArgumentError, 'It must be a numeric code, or be 1..6')
+      end
+
+      it "raise ArgumentError, \"Code length must be #{CODE_SIZE}\"" do
+        game.instance_variable_set(:@user_code, [1, 2, 3, 4, 5, 6])
+        expect { game.validation }.to raise_error(ArgumentError, "Code length must be #{CODE_SIZE}")
+      end
+    end
+    describe "#match" do
 
       before do
-        game.start
         game.instance_variable_set(:@secret_code, [1, 2, 3, 3])
         game.instance_variable_set(:@user_code, [4, 3, 2, 1])
       end
@@ -194,9 +242,7 @@ module Codebreaker
       end
     end
 
-    context "#hint" do
-
-      before { game.start }
+    describe "#hint" do
 
       it "returns hint" do
         game.instance_variable_set(:@secret_code, [1, 2, 3 ,4])
@@ -207,17 +253,24 @@ module Codebreaker
         expect{game.hint}.to change{game.hint_count}.by(-1)
       end
 
+      it "change attempts count by -1" do
+        expect{game.hint}.to change{game.attempts}.by(-1)
+      end
+
+      it "change score by -#{SCORE_MULTIPLIER}" do
+        expect{game.hint}.to change{game.score}.by(-SCORE_MULTIPLIER)
+      end
+
       it "raise RuntimeError, \"Hint may be used only #{HINT_COUNT} times\"" do
         game.instance_variable_set(:@hint_count, 0)
         expect {game.hint}.to raise_error(RuntimeError, "Hint may be used only #{HINT_COUNT} times")
       end
     end
 
-    describe 'private' do
-      context "#matching_numbers" do
+    context 'private' do
+      describe "#matching_numbers" do
 
         before do
-          game.start
           game.instance_variable_set(:@secret_code, [1, 3, 2, 4])
           game.instance_variable_set(:@user_code, [6, 2, 6, 4])
         end
@@ -231,10 +284,9 @@ module Codebreaker
         end
       end
 
-      context "#exact_matching_numbers" do
+      describe "#exact_matching_numbers" do
 
         before do
-          game.start
           game.instance_variable_set(:@secret_code, [1, 3, 2, 4])
           game.instance_variable_set(:@user_code, [3, 3, 3, 4])
         end
@@ -248,10 +300,9 @@ module Codebreaker
         end
       end
 
-      context "#not_exact_matching_numbers" do
+      describe "#not_exact_matching_numbers" do
 
         before do
-          game.start
           game.instance_variable_set(:@secret_code, [1, 2, 3, 4])
           game.instance_variable_set(:@user_code, [4, 3, 2, 1])
         end
