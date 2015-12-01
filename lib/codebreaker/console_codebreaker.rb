@@ -5,10 +5,10 @@ module Codebreaker
     def exe
       loop do
         start_game
+      user_name_input
         guessing
         restart_game == 'y' ? next : break
       end
-      user_name_input
     end
 
     def start_game
@@ -20,6 +20,7 @@ module Codebreaker
       loop do
         if @game.win?
           p 'You win!'
+          save_score
           break
         elsif @game.lose?
           p 'You lose!'
@@ -48,6 +49,21 @@ module Codebreaker
         p 'Name must contain at least one character'
         end
       end
+    end
+
+    def save_score
+      p 'Do you want to save score? y/n'
+      input = gets.chomp
+      score_hash = {
+        "player - #{@game.user_name}" => {
+          'score'         => @game.score,
+          'attempts left' => "#{@game.attempts} of #{ATTEMPTS}",
+          'hints left'    => "#{@game.hint_count} of #{HINT_COUNT}",
+          'started at'    => @game.started_at,
+          'ended at'      => "#{Time.now}"
+          }
+        }
+      input == 'y' ? @game.save_game(score_hash) : return
     end
 
     private

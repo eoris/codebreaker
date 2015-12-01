@@ -1,3 +1,5 @@
+require 'yaml'
+
 module Codebreaker
 
   ATTEMPTS         = 10
@@ -6,11 +8,12 @@ module Codebreaker
   SCORE_MULTIPLIER = 10
 
   class Game
-    attr_reader :score, :attempts, :hint_number, :hint_count, :user_code
+    attr_reader :score, :attempts, :hint_number, :hint_count, :user_code, :started_at
     attr_accessor :user_name
     
     def initialize(user_name = 'Player1')
       @user_name   = user_name
+      @started_at = Time.now
     end
     
     def start
@@ -83,23 +86,8 @@ module Codebreaker
       end
     end
 
-    def save_game(file)
-      if File.exist?("./saves/#{file}")
-        raise IOError, 'Such file already exist'
-      else
-        File.open("./saves/#{file}", 'w') { |f| f.write self.to_yaml }
-      end
-    end
-
-    def load_game(file)
-      load = YAML.load_file("./saves/#{file}")
-      @user_name   = load.user_name
-      @secret_code = load.instance_variable_get(:@secret_code)
-      @user_code   = load.user_code
-      @hint_number = load.hint_number
-      @hint_count  = load.hint_count
-      @attempts    = load.attempts
-      @score       = load.score
+    def save_game(hash = {player: @user_name, score: @score}, file = 'score_table')
+      File.open("./saves/#{file}", 'a+') { |f| f.write hash.to_yaml }
     end
     
     private

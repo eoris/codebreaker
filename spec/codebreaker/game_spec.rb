@@ -256,14 +256,15 @@ module Codebreaker
     end
 
     describe "#save_game" do
-      it "raises IOError" do
-        game.save_game('save1')
-        expect{ game.save_game('save1') }.to raise_error(IOError, 'Such file already exist')
+      after do
+        File.delete("./saves/save1") if File.exist?("./saves/save1")
       end
 
-      it "saves game to file" do
-
+      it "create score" do
+        game.save_game({score: game.score}, 'save1')
+        expect( File.exist? "./saves/save1" )
       end
+
     end
 
     context 'private' do
