@@ -75,39 +75,27 @@ module Codebreaker
         expect(game.guess(1234)).to be_a(Array)
       end
 
-      it "returns '++++' if guess the secret code" do
-        game.instance_variable_set(:@secret_code, [1, 2, 3, 4])
-        expect(game.guess(1234)).to eq(['+', '+', '+', '+'])
-      end
+      @guessing_tests = 
+        ['1234', '1234', '++++'],
+        ['1233', '1234', '+++'],
+        ['2232', '2244', '++'],
+        ['2234', '4444', '+'],
+        ['4321', '1234', '----'],
+        ['2132', '1224', '---'],
+        ['1212', '2145', '--'],
+        ['3331', '1222', '-'],
+        ['5565', '5556', '++--'],
+        ['4545', '4556', '++-'],
+        ['3465', '3654', '+---'],
+        ['2526', '2251', '+--'],
+        ['3344', '3456', '+-'],
+        ['6666', '5555', '']
 
-      it "returns '+++' if guess the secret code" do
-        game.instance_variable_set(:@secret_code, [2, 2, 3, 2])
-        expect(game.guess(2222)).to eq(['+', '+', '+'])
-      end
-
-      it "returns '+++'" do
-        game.instance_variable_set(:@secret_code, [2, 2, 3, 4])
-        expect(game.guess(1234)).to eq(['+', '+', '+'])
-      end
-
-      it "returns '+-'" do
-        game.instance_variable_set(:@secret_code, [1, 3, 2, 3])
-        expect(game.guess(1256)).to eq(['+', '-'])
-      end
-
-      it "returns '++'" do
-        game.instance_variable_set(:@secret_code, [4, 3, 2, 3])
-        expect(game.guess(5523)).to eq(['+', '+'])
-      end
-
-      it "returns '----'" do
-        game.instance_variable_set(:@secret_code, [1, 2, 3 ,4])
-        expect(game.guess(4321)).to eq(['-', '-', '-', '-'])
-      end
-
-      it "returns '+'" do
-        game.instance_variable_set(:@secret_code, [2, 2, 2 ,2])
-        expect(game.guess(1234)).to eq(['+'])
+      @guessing_tests.each do |gues|
+        it "returns '#{gues[2]}' when secret code: #{gues[0]}; user code: #{gues[1]}" do
+          game.instance_variable_set(:@secret_code, gues[0].split('').map(&:to_i))
+          expect(game.guess(gues[1])).to eq(gues[2].split(''))
+        end
       end
 
       it "raises ArgumentError 'It must be a numeric code, or be 1..6'" do
@@ -135,8 +123,8 @@ module Codebreaker
         expect{game.guess(1111)}.to_not change{game.score}
       end
 
-      it "receives match method" do
-        expect(game).to receive(:match)
+      it "receives #answer method" do
+        expect(game).to receive(:answer)
         game.guess(4444)
       end
 
@@ -221,12 +209,12 @@ module Codebreaker
         expect { game.validation }.to raise_error(ArgumentError, 'It must be a numeric code, or be 1..6')
       end
 
-      it "raise ArgumentError, \"Code length must be #{CODE_SIZE}\"" do
+      it "raises ArgumentError, \"Code length must be #{CODE_SIZE}\"" do
         game.instance_variable_set(:@user_code, [1, 2, 3, 4, 5, 6])
         expect { game.validation }.to raise_error(ArgumentError, "Code length must be #{CODE_SIZE}")
       end
     end
-    describe "#match" do
+    describe "#answer" do
 
       before do
         game.instance_variable_set(:@secret_code, [1, 2, 3, 3])
@@ -234,11 +222,11 @@ module Codebreaker
       end
 
       it "returns ['-', '-', '-']" do
-        expect(game.match).to eq(['-', '-', '-'])
+        expect(game.answer).to eq(['-', '-', '-'])
       end
 
       it "returns Array" do
-        expect(game.match).to be_a(Array)
+        expect(game.answer).to be_a(Array)
       end
     end
 
@@ -264,6 +252,17 @@ module Codebreaker
       it "raise RuntimeError, \"Hint may be used only #{HINT_COUNT} times\"" do
         game.instance_variable_set(:@hint_count, 0)
         expect {game.hint}.to raise_error(RuntimeError, "Hint may be used only #{HINT_COUNT} times")
+      end
+    end
+
+    describe "#save_game" do
+      it "raises IOError" do
+        game.save_game('save1')
+        expect{ game.save_game('save1') }.to raise_error(IOError, 'Such file already exist')
+      end
+
+      it "saves game to file" do
+
       end
     end
 

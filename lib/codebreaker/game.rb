@@ -30,7 +30,7 @@ module Codebreaker
         validation
         @attempts -= 1
         @score -= SCORE_MULTIPLIER unless self.win?
-        match
+        answer
       else
         raise RuntimeError, "0 from #{ATTEMPTS} attempts left"
       end
@@ -61,7 +61,7 @@ module Codebreaker
       raise ArgumentError, "Code length must be #{CODE_SIZE}" if @user_code.count != CODE_SIZE
     end
     
-    def match
+    def answer
       result = []
       result << exact_matching_numbers.fill('+')
       result << not_exact_matching_numbers.fill('-')
@@ -84,15 +84,15 @@ module Codebreaker
     end
 
     def save_game(file)
-      if File.exist?(file)
+      if File.exist?("./saves/#{file}")
         raise IOError, 'Such file already exist'
       else
-        File.open(file, 'w') { |f| f.write self.to_yaml }
+        File.open("./saves/#{file}", 'w') { |f| f.write self.to_yaml }
       end
     end
 
     def load_game(file)
-      load = YAML.load_file(file)
+      load = YAML.load_file("./saves/#{file}")
       @user_name   = load.user_name
       @secret_code = load.instance_variable_get(:@secret_code)
       @user_code   = load.user_code
