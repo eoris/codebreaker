@@ -7,4 +7,5 @@
 /pkg/
 /spec/reports/
 /tmp/
-/saves/
+/*.gem
+/**/saves/
