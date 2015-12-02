@@ -57,7 +57,7 @@ module Codebreaker
                         'hints left'    => "#{@game.hint_count} of #{HINT_COUNT}",
                         'started at'    => @started_at,
                         'ended at'      => "#{Time.now}" } }
-       @game.save_game(score_hash) if input == 'y'
+      @game.save_game(score_hash) if input == 'y'
     end
 
     private

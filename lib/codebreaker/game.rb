@@ -86,7 +86,8 @@ module Codebreaker
     end
 
     def save_game(hash = {player: @user_name, score: @score}, file = 'score_table')
-      File.open("../saves/#{file}", 'a+') { |f| f.write hash.to_yaml }
+      Dir.mkdir("saves") unless Dir.exist?("saves")
+      File.open("./saves/#{file}", 'a+') { |f| f.write hash.to_yaml }
     end
     
     private
