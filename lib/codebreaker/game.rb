@@ -10,11 +10,11 @@ module Codebreaker
   class Game
     attr_reader :score, :attempts, :hint_number, :hint_count, :user_code, :secret_code
     attr_accessor :user_name
-    
+
     def initialize(user_name = 'Player1')
       @user_name   = user_name
     end
-    
+
     def start
       @secret_code = secret_code_generator
       @user_code   = []
@@ -25,7 +25,7 @@ module Codebreaker
       self
     end
     alias_method :restart, :start
-    
+
     def guess(code)
       if attempts_left?
         @user_code = code.to_s.chars.map(&:to_i)
@@ -37,39 +37,39 @@ module Codebreaker
         raise RuntimeError, "0 from #{ATTEMPTS} attempts left"
       end
     end
-    
+
     def attempts_left?
       @attempts > 0
     end
     alias_method :attempts?, :attempts_left?
-    
+
     def win?
       @secret_code == @user_code
     end
-    
+
     def lose?
       @attempts == 0
     end
-    
+
     def have_hint?
       @hint_count > 0
     end
     alias_method :hint?, :have_hint?
-    
+
     def validation
       raise ArgumentError, 'User name is empty' if user_name.empty?
       raise ArgumentError, 'Secret code is empty' if @secret_code.empty?
       raise ArgumentError, 'It must be a numeric code, or be 1..6' if @user_code.join.match(/[^1-6]+/)
       raise ArgumentError, "Code length must be #{CODE_SIZE}" if @user_code.count != CODE_SIZE
     end
-    
+
     def answer
       result = []
       result << exact_matching_numbers.fill('+')
       result << not_exact_matching_numbers.fill('-')
       result.flatten
     end
-    
+
     def hint
       if have_hint?
         @hint_count -= 1
@@ -86,20 +86,21 @@ module Codebreaker
     end
 
     def save_game(hash = {player: @user_name, score: @score}, file = 'score_table')
-      File.open("../saves/#{file}", 'a+') { |f| f.write hash.to_yaml }
+      Dir.mkdir("saves") unless Dir.exist?("saves")
+      File.open("saves/#{file}", 'a+') { |f| f.write hash.to_yaml }
     end
-    
+
     private
-    
+
     def matching_numbers
       s = @secret_code.dup
       @user_code.select { |i| s.delete_at(s.index(i)) if s.include?(i) }
     end
-    
+
     def exact_matching_numbers
       @secret_code.zip(@user_code).select { |s, u| s == u }.map(&:uniq).flatten
     end
-    
+
     def not_exact_matching_numbers
       matched = matching_numbers
       if exact_matching_numbers.empty?
@@ -110,7 +111,7 @@ module Codebreaker
       end
       matched
     end
-    
+
     def secret_code_generator
       CODE_SIZE.times.map { rand(1..6) }
     end
