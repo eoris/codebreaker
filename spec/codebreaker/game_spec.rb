@@ -22,7 +22,7 @@ module Codebreaker
         expect(game.instance_variable_get(:@secret_code)).to be_a(Array)
       end
 
-      it "saves 4 numbers secret code" do
+      it "saves #{CODE_SIZE} numbers secret code" do
         expect(game.instance_variable_get(:@secret_code).count).to eq(CODE_SIZE)
       end
 
@@ -98,15 +98,15 @@ module Codebreaker
         end
       end
 
-      it "raises ArgumentError 'It must be a numeric code, or be 1..6'" do
+      it "raises ArgumentError 'It must be a numeric code, or be 1..6' when user input '7890'" do
         expect {game.guess(7890)}.to raise_error(ArgumentError, "It must be a numeric code, or be 1..6")
       end
 
-      it "raises ArgumentError 'It must be a numeric code, or be 1..6'" do
+      it "raises ArgumentError 'It must be a numeric code, or be 1..6 when user input 'abcd''" do
         expect {game.guess('abcd')}.to raise_error(ArgumentError, "It must be a numeric code, or be 1..6")
       end
 
-      it "raises ArgumentError \"Code length must be #{CODE_SIZE}\"" do
+      it "raises ArgumentError \"Code length must be #{CODE_SIZE}\" when user input more than #{CODE_SIZE} digits" do
         expect {game.guess(123456)}.to raise_error(ArgumentError, "Code length must be #{CODE_SIZE}")
       end
 
@@ -221,7 +221,7 @@ module Codebreaker
         game.instance_variable_set(:@user_code, [4, 3, 2, 1])
       end
 
-      it "returns ['-', '-', '-']" do
+      it "returns ['-', '-', '-'] when secret code: '1233'; user code: 4321" do
         expect(game.answer).to eq(['-', '-', '-'])
       end
 

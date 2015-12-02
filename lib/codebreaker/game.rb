@@ -8,16 +8,15 @@ module Codebreaker
   SCORE_MULTIPLIER = 10
 
   class Game
-    attr_reader :score, :attempts, :hint_number, :hint_count, :user_code, :started_at
+    attr_reader :score, :attempts, :hint_number, :hint_count, :user_code, :secret_code
     attr_accessor :user_name
     
     def initialize(user_name = 'Player1')
       @user_name   = user_name
-      @started_at = Time.now
     end
     
     def start
-      @secret_code = secret_code
+      @secret_code = secret_code_generator
       @user_code   = []
       @hint_number = []
       @hint_count  = HINT_COUNT
@@ -87,7 +86,7 @@ module Codebreaker
     end
 
     def save_game(hash = {player: @user_name, score: @score}, file = 'score_table')
-      File.open("./saves/#{file}", 'a+') { |f| f.write hash.to_yaml }
+      File.open("../saves/#{file}", 'a+') { |f| f.write hash.to_yaml }
     end
     
     private
@@ -112,7 +111,7 @@ module Codebreaker
       matched
     end
     
-    def secret_code
+    def secret_code_generator
       CODE_SIZE.times.map { rand(1..6) }
     end
   end
