@@ -22,8 +22,8 @@ module Codebreaker
         expect(game.instance_variable_get(:@secret_code)).to be_a(Array)
       end
 
-      it "saves #{CODE_SIZE} numbers secret code" do
-        expect(game.instance_variable_get(:@secret_code).count).to eq(CODE_SIZE)
+      it "saves #{Game::CODE_SIZE} numbers secret code" do
+        expect(game.instance_variable_get(:@secret_code).count).to eq(Game::CODE_SIZE)
       end
 
       it "saves secret code with numbers from 1 to 6" do
@@ -39,15 +39,15 @@ module Codebreaker
       end
 
       it "resets the count of hints" do
-        expect(game.instance_variable_get(:@hint_count)).to eq(HINT_COUNT)
+        expect(game.instance_variable_get(:@hint_count)).to eq(Game::HINT_COUNT)
       end
 
       it 'resets attempts' do
-        expect(game.instance_variable_get(:@attempts)).to eq(ATTEMPTS)
+        expect(game.instance_variable_get(:@attempts)).to eq(Game::ATTEMPTS)
       end
 
       it 'resets score' do
-        expect(game.instance_variable_get(:@score)).to eq(SCORE_MULTIPLIER * ATTEMPTS)
+        expect(game.instance_variable_get(:@score)).to eq(Game::SCORE_MULTIPLIER * Game::ATTEMPTS)
       end
 
       it 'returns Game object' do
@@ -106,19 +106,19 @@ module Codebreaker
         expect {game.guess('abcd')}.to raise_error(ArgumentError, "It must be a numeric code, or be 1..6")
       end
 
-      it "raises ArgumentError \"Code length must be #{CODE_SIZE}\" when user input more than #{CODE_SIZE} digits" do
-        expect {game.guess(123456)}.to raise_error(ArgumentError, "Code length must be #{CODE_SIZE}")
+      it "raises ArgumentError \"Code length must be #{Game::CODE_SIZE}\" when user input more than #{Game::CODE_SIZE} digits" do
+        expect {game.guess(123456)}.to raise_error(ArgumentError, "Code length must be #{Game::CODE_SIZE}")
       end
 
       it "change attempts count by -1" do
         expect{game.guess(1234)}.to change{game.attempts}.by(-1)
       end
 
-      it "change score by -#{SCORE_MULTIPLIER}" do
-        expect{game.guess(1234)}.to change{game.score}.by(-SCORE_MULTIPLIER)
+      it "change score by -#{Game::SCORE_MULTIPLIER}" do
+        expect{game.guess(1234)}.to change{game.score}.by(-Game::SCORE_MULTIPLIER)
       end
 
-      it "did not change score by -#{SCORE_MULTIPLIER} if game.win?" do
+      it "did not change score by -#{Game::SCORE_MULTIPLIER} if game.win?" do
         game.instance_variable_set(:@secret_code, [1, 1, 1, 1])
         expect{game.guess(1111)}.to_not change{game.score}
       end
@@ -128,9 +128,9 @@ module Codebreaker
         game.guess(4444)
       end
 
-      it "raises RuntimeError, \"0 from #{ATTEMPTS} attempts left\"" do
+      it "raises RuntimeError, \"0 from #{Game::ATTEMPTS} attempts left\"" do
         game.instance_variable_set(:@attempts, 0)
-        expect {game.guess(1234)}.to raise_error(RuntimeError, "0 from #{ATTEMPTS} attempts left")
+        expect {game.guess(1234)}.to raise_error(RuntimeError, "0 from #{Game::ATTEMPTS} attempts left")
       end
     end
 
@@ -209,9 +209,9 @@ module Codebreaker
         expect { game.validation }.to raise_error(ArgumentError, 'It must be a numeric code, or be 1..6')
       end
 
-      it "raises ArgumentError, \"Code length must be #{CODE_SIZE}\"" do
+      it "raises ArgumentError, \"Code length must be #{Game::CODE_SIZE}\"" do
         game.instance_variable_set(:@user_code, [1, 2, 3, 4, 5, 6])
-        expect { game.validation }.to raise_error(ArgumentError, "Code length must be #{CODE_SIZE}")
+        expect { game.validation }.to raise_error(ArgumentError, "Code length must be #{Game::CODE_SIZE}")
       end
     end
     describe "#answer" do
@@ -245,13 +245,13 @@ module Codebreaker
         expect{game.hint}.to change{game.attempts}.by(-1)
       end
 
-      it "change score by -#{SCORE_MULTIPLIER}" do
-        expect{game.hint}.to change{game.score}.by(-SCORE_MULTIPLIER)
+      it "change score by -#{Game::SCORE_MULTIPLIER}" do
+        expect{game.hint}.to change{game.score}.by(-Game::SCORE_MULTIPLIER)
       end
 
-      it "raise RuntimeError, \"Hint may be used only #{HINT_COUNT} times\"" do
+      it "raise RuntimeError, \"Hint may be used only #{Game::HINT_COUNT} times\"" do
         game.instance_variable_set(:@hint_count, 0)
-        expect {game.hint}.to raise_error(RuntimeError, "Hint may be used only #{HINT_COUNT} times")
+        expect {game.hint}.to raise_error(RuntimeError, "Hint may be used only #{Game::HINT_COUNT} times")
       end
     end
 

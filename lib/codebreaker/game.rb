@@ -2,14 +2,14 @@ require 'yaml'
 
 module Codebreaker
 
-  ATTEMPTS         = 10
-  CODE_SIZE        = 4
-  HINT_COUNT       = 1
-  SCORE_MULTIPLIER = 10
-
   class Game
     attr_reader :score, :attempts, :hint_number, :hint_count, :user_code, :secret_code
     attr_accessor :user_name
+
+    ATTEMPTS         = 10
+    CODE_SIZE        = 4
+    HINT_COUNT       = 1
+    SCORE_MULTIPLIER = 10
 
     def initialize(user_name = 'Player1')
       @user_name   = user_name
