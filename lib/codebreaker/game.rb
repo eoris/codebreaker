@@ -71,17 +71,21 @@ module Codebreaker
     end
 
     def hint
-      if have_hint?
-        @hint_count -= 1
-        @attempts -= 1
-        @score -= SCORE_MULTIPLIER
-        random_index = rand(CODE_SIZE)
-        @hint_number = @secret_code[random_index]
-        hint_arr = Array.new(CODE_SIZE, '*')
-        hint_arr[random_index] = @hint_number
-        @hint_number = hint_arr
+      if attempts_left?
+        if have_hint?
+          @hint_count -= 1
+          @attempts -= 1
+          @score -= SCORE_MULTIPLIER
+          random_index = rand(CODE_SIZE)
+          @hint_number = @secret_code[random_index]
+          hint_arr = Array.new(CODE_SIZE, '*')
+          hint_arr[random_index] = @hint_number
+          @hint_number = hint_arr
+        else
+          raise RuntimeError, "Hint may be used only #{HINT_COUNT} times"
+        end
       else
-        raise RuntimeError, "Hint may be used only #{HINT_COUNT} times"
+        raise RuntimeError, "0 from #{ATTEMPTS} attempts left"
       end
     end
 
